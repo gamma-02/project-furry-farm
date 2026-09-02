@@ -13,7 +13,7 @@ config_version=5
 config/name="Project Furry Farm"
 run/main_scene="uid://bj4305hdieha8"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://kmkdl4techya"
 
 [display]
 
