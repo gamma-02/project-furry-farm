@@ -1,0 +1,19 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://bgapwhiennrhs"]
+
+[ext_resource type="Texture2D" uid="uid://s67xjnfjmiac" path="res://Assets/Materials/ThatchRoof/thatch_roof_angled_diff_1k.png" id="1_5v7k3"]
+[ext_resource type="Texture2D" uid="uid://b2rmb42hyh47f" path="res://Assets/Materials/ThatchRoof/thatch_roof_angled_arm_1k.png" id="2_p2g67"]
+[ext_resource type="Texture2D" uid="uid://d12hp4hxowaix" path="res://Assets/Materials/ThatchRoof/thatch_roof_angled_disp_1k.png" id="3_p2g67"]
+[ext_resource type="Texture2D" uid="uid://vjjl1wyd1x8u" path="res://Assets/Materials/ThatchRoof/thatch_roof_angled_nor_gl_1k.png" id="4_4s28x"]
+
+[resource]
+albedo_texture = ExtResource("1_5v7k3")
+metallic_texture = ExtResource("2_p2g67")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("2_p2g67")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("4_4s28x")
+ao_enabled = true
+ao_texture = ExtResource("2_p2g67")
+heightmap_texture = ExtResource("3_p2g67")
+uv1_scale = Vector3(3, 3, 3)

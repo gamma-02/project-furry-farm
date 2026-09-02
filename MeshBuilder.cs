@@ -23,7 +23,9 @@ public partial class MeshBuilder : MeshInstance3D
 		}
 	}
 	private bool _meshDirty = true;
-
+	
+	private BaseMaterial3D _thatch = ResourceLoader.Load<BaseMaterial3D>("res://Assets/Materials/ThatchRoof/testMaterial.tres");
+	
 	//Following two variables are for working collision mesh, to be combined with generated_collision.gd
 	//marked as dirty once CollisionMesh is set.
 	public bool CollisionMeshDirty = false; 
@@ -64,6 +66,8 @@ public partial class MeshBuilder : MeshInstance3D
 		} else if (what == NotificationEditorPostSave && Mesh is ArrayMesh postSaveArrMesh)
 		{
 			postSaveArrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, _array);
+			postSaveArrMesh.SurfaceSetMaterial(0, _thatch);
+
 			_array = null;
 		}
 	}
@@ -100,12 +104,15 @@ public partial class MeshBuilder : MeshInstance3D
 			{
 				arrMesh.ClearSurfaces();
 			}
+			
 			// No blendshapes, lods, or compression used.
 			arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surface);
-
+			
+			arrMesh.SurfaceSetMaterial(0, _thatch);
+			
 			// To save mesh
 			// ResourceSaver.Save(Mesh, "res://test.tres", ResourceSaver.SaverFlags.Compress);
-			
+
 		}
 	}
 
