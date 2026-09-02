@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://b3f45jw2o2toh"]
+
+[ext_resource type="Texture2D" uid="uid://bth4bn8ayoq33" path="res://icon.svg" id="1_cvhby"]
+[ext_resource type="Texture2D" uid="uid://kmkdl4techya" path="res://icon.png" id="2_58q7n"]
+[ext_resource type="Script" uid="uid://k8afh4etcrg4" path="res://math_test.gd" id="3_lcq0g"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_stsu2"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_xhu6v"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qlf2l"]
+albedo_texture = ExtResource("1_cvhby")
+billboard_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_58q7n"]
+offsets = PackedFloat32Array(0.8915663, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lt5k8"]
+gradient = SubResource("Gradient_58q7n")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.4869565, 0.49565217)
+fill_to = Vector2(0.71304345, 0.24347825)
+
+[node name="Node3D" type="Node3D" unique_id=2092590298]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1230241904]
+visible = false
+mesh = SubResource("PlaneMesh_stsu2")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1127553440]
+transform = Transform3D(1, 0, 0, 0, 0.013555783, -0.9999081, 0, 0.9999081, 0.013555783, 0, 0, 0)
+visible = false
+mesh = SubResource("PlaneMesh_xhu6v")
+surface_material_override/0 = SubResource("StandardMaterial3D_qlf2l")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=475145688]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.7737925)
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1281904524]
+visible = false
+pixel_size = 0.00025
+billboard = 1
+double_sided = false
+texture = ExtResource("2_58q7n")
+
+[node name="light_field_origin" type="Node3D" parent="." unique_id=2109384126]
+
+[node name="Sprite3D2" type="Sprite3D" parent="light_field_origin" unique_id=860845541]
+modulate = Color(2, 2, 2, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D3" type="Sprite3D" parent="light_field_origin" unique_id=494015980]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+modulate = Color(1.5403023, 1.5403023, 1.5403023, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D4" type="Sprite3D" parent="light_field_origin" unique_id=991586723]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.9000001)
+modulate = Color(0.67671037, 0.67671037, 0.67671037, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D5" type="Sprite3D" parent="light_field_origin" unique_id=2063294043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+modulate = Color(1.5403023, 1.5403023, 1.5403023, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D6" type="Sprite3D" parent="light_field_origin" unique_id=1584988473]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+modulate = Color(0.5838532, 0.5838532, 0.5838532, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D7" type="Sprite3D" parent="light_field_origin" unique_id=1672879849]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1)
+modulate = Color(1.0806046, 1.0806046, 1.0806046, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D9" type="Sprite3D" parent="light_field_origin" unique_id=2107861597]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
+modulate = Color(0.12415547, 0.12415547, 0.12415547, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D8" type="Sprite3D" parent="light_field_origin" unique_id=1170544060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+modulate = Color(0.12415547, 0.12415547, 0.12415547, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
+
+[node name="Sprite3D10" type="Sprite3D" parent="light_field_origin" unique_id=305525180]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.8000002)
+modulate = Color(0.057777595, 0.057777595, 0.057777595, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_lt5k8")
+script = ExtResource("3_lcq0g")
