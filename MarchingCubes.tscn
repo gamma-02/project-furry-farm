@@ -1,0 +1,40 @@
+[gd_scene format=4 uid="uid://dbnlwu4jnphu4"]
+
+[ext_resource type="Script" uid="uid://bp6n6y3cgam7e" path="res://MeshBuilder.cs" id="1_m6v2k"]
+[ext_resource type="Script" uid="uid://4xq16cepmebe" path="res://generated_collision.gd" id="2_4xxe7"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4xxe7"]
+_surfaces = [{
+"aabb": AABB(0, 0, 0, 1, 1, 1e-05),
+"attribute_data": PackedByteArray("AAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAACAPwAAgD8="),
+"format": 34359742487,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAQADAAIA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAAAA/3///wAA/7//f///AAD/v/9///8AAP+//3///wAA/78=")
+}]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_4xxe7"]
+data = PackedVector3Array(0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0)
+
+[node name="MarchingCubes" type="Node3D" unique_id=1522620498]
+
+[node name="AreaLight3D" type="AreaLight3D" parent="." unique_id=208466409]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.502544)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2143700644]
+transform = Transform3D(1, 0, 0, 0, 0.94736874, 0.32014441, 0, -0.32014441, 0.94736874, 0, 1.0629731, 2.4426932)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1591651628]
+mesh = SubResource("ArrayMesh_4xxe7")
+script = ExtResource("1_m6v2k")
+IsSphere = false
+CollisionMesh = SubResource("ConcavePolygonShape3D_4xxe7")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="MeshInstance3D" unique_id=1170177657]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/RigidBody3D" unique_id=1595575676]
+shape = SubResource("ConcavePolygonShape3D_4xxe7")
+script = ExtResource("2_4xxe7")

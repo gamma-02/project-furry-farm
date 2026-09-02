@@ -1,3 +1,15 @@
 [gd_scene format=3 uid="uid://bj4305hdieha8"]
 
+[ext_resource type="Script" uid="uid://uig0t8yyfsq8" path="res://mesh_test_thing.gd" id="1_3mqji"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_qlf2l"]
+
 [node name="Node3D" type="Node3D" unique_id=1957932307]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1092555893]
+transform = Transform3D(0.9304346, 0, -0.36645797, 0, 1, 0, 0.36645797, 0, 0.9304346, -1.858439, 1.3340727, 4.6378984)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=95817710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0053710938, 0)
+mesh = SubResource("CapsuleMesh_qlf2l")
+script = ExtResource("1_3mqji")
