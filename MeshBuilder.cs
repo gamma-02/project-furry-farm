@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Godot;
+using Godot.Collections;
+using Array = Godot.Collections.Array;
 
 namespace ProjectFurryFarm;
 
@@ -24,8 +26,8 @@ public partial class MeshBuilder : MeshInstance3D
 
 	//Following two variables are for working collision mesh, to be combined with generated_collision.gd
 	//marked as dirty once CollisionMesh is set.
-	[Export] public bool CollisionMeshDirty = false; 
-	[Export] public ConcavePolygonShape3D CollisionMesh = null;
+	public bool CollisionMeshDirty = false; 
+	public ConcavePolygonShape3D CollisionMesh = null;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -47,6 +49,22 @@ public partial class MeshBuilder : MeshInstance3D
 			
 			CollisionMesh = Mesh.CreateTrimeshShape();
 			CollisionMeshDirty = true;
+		}
+	}
+	
+	private Array _array;
+	public override void _Notification(int what)
+	{
+		base._Notification(what);
+
+		if (what == NotificationEditorPreSave && Mesh is ArrayMesh preSaveArrMesh && preSaveArrMesh.GetSurfaceCount() > 0)
+		{
+			_array = preSaveArrMesh.SurfaceGetArrays(0);
+			preSaveArrMesh.ClearSurfaces();
+		} else if (what == NotificationEditorPostSave && Mesh is ArrayMesh postSaveArrMesh)
+		{
+			postSaveArrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, _array);
+			_array = null;
 		}
 	}
 
@@ -95,10 +113,10 @@ public partial class MeshBuilder : MeshInstance3D
 	{
 		//vertex positions
 		verts.AddRange([
-			new (0.0f, 0.0f, 0.0f), 
-			new (0.0f, 1.0f, 0.0f), 
-			new (1.0f, 0.0f, 0.0f), 
-			new (1.0f, 1.0f, 0.0f)
+			new Vector3(0.0f, 0.0f, 0.0f) + new Vector3(-0.5f, -0.5f, 0.0f), 
+			new Vector3(0.0f, 1.0f, 0.0f) + new Vector3(-0.5f, -0.5f, 0.0f), 
+			new Vector3(1.0f, 0.0f, 0.0f) + new Vector3(-0.5f, -0.5f, 0.0f), 
+			new Vector3(1.0f, 1.0f, 0.0f) + new Vector3(-0.5f, -0.5f, 0.0f)
 		]);
 		
 		//UV coordinates

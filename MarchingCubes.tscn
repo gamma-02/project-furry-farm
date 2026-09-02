@@ -1,23 +1,14 @@
-[gd_scene format=4 uid="uid://dbnlwu4jnphu4"]
+[gd_scene format=3 uid="uid://dbnlwu4jnphu4"]
 
 [ext_resource type="Script" uid="uid://bp6n6y3cgam7e" path="res://MeshBuilder.cs" id="1_m6v2k"]
 [ext_resource type="Script" uid="uid://4xq16cepmebe" path="res://generated_collision.gd" id="2_4xxe7"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_4xxe7"]
-_surfaces = [{
-"aabb": AABB(0, 0, 0, 1, 1, 1e-05),
-"attribute_data": PackedByteArray("AAAAAAAAAAAAAAAAAACAPwAAgD8AAAAAAACAPwAAgD8="),
-"format": 34359742487,
-"index_count": 6,
-"index_data": PackedByteArray("AAABAAIAAQADAAIA"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 4,
-"vertex_data": PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAACAPwAAAAAAAAAAAACAPwAAgD8AAAAA/3///wAA/7//f///AAD/v/9///8AAP+//3///wAA/78=")
-}]
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_4xxe7"]
-data = PackedVector3Array(0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xhu6v"]
+height = 2.0429688
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_stsu2"]
 
 [node name="MarchingCubes" type="Node3D" unique_id=1522620498]
 
@@ -28,13 +19,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.502544)
 transform = Transform3D(1, 0, 0, 0, 0.94736874, 0.32014441, 0, -0.32014441, 0.94736874, 0, 1.0629731, 2.4426932)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1591651628]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 mesh = SubResource("ArrayMesh_4xxe7")
 script = ExtResource("1_m6v2k")
-IsSphere = false
-CollisionMesh = SubResource("ConcavePolygonShape3D_4xxe7")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="MeshInstance3D" unique_id=1170177657]
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=2129456917]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/RigidBody3D" unique_id=1595575676]
-shape = SubResource("ConcavePolygonShape3D_4xxe7")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1595575676]
+debug_fill = false
 script = ExtResource("2_4xxe7")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=85347836]
+transform = Transform3D(1, 0, 0, 0, 0.84623057, -0.5328169, 0, 0.5328169, 0.84623057, 0, 2.4553032, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1867656930]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.021484375, 0)
+shape = SubResource("CapsuleShape3D_xhu6v")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=562702548]
+mesh = SubResource("CapsuleMesh_stsu2")
