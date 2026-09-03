@@ -11,7 +11,6 @@ namespace ProjectFurryFarm;
 public partial class MeshBuilder : MeshInstance3D
 {
 	private bool _isSphere = true;
-
 	[Export]
 	public bool IsSphere
 	{
@@ -22,6 +21,43 @@ public partial class MeshBuilder : MeshInstance3D
 			_isSphere = value;
 		}
 	}
+
+	private bool _doCubeMarching = true;
+	[Export]
+	public bool DoCubeMarching
+	{
+		get => _doCubeMarching;
+		set
+		{
+			_meshDirty = true;
+			_doCubeMarching = value;
+		}
+	}
+
+	private Vector3I _chunks = new (1, 1, 1);
+	[Export]
+	public Vector3I Chunks
+	{
+		get => _chunks;
+		set
+		{
+			_meshDirty = true;
+			_chunks = value;
+		}
+	}
+
+	private float _groundLevel = 0.639f;
+	[Export]
+	public float GroundLevel
+	{
+		get => _groundLevel;
+		set
+		{
+			_meshDirty = true;
+			_groundLevel = value;
+		}
+	}
+
 	private bool _meshDirty = true;
 	
 	private BaseMaterial3D _thatch = ResourceLoader.Load<BaseMaterial3D>("res://Assets/Materials/ThatchRoof/testMaterial.tres");
@@ -30,6 +66,8 @@ public partial class MeshBuilder : MeshInstance3D
 	//marked as dirty once CollisionMesh is set.
 	public bool CollisionMeshDirty = false; 
 	public ConcavePolygonShape3D CollisionMesh = null;
+
+	[Export] public bool UseFlatShading = false;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -44,14 +82,24 @@ public partial class MeshBuilder : MeshInstance3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (_meshDirty)
-		{
-			BuildMesh();
-			_meshDirty = false;
+		if (!_meshDirty) return;
+		
+		BuildMesh();
+		_meshDirty = false;
 			
-			CollisionMesh = Mesh.CreateTrimeshShape();
-			CollisionMeshDirty = true;
-		}
+		CollisionMesh = Mesh.CreateTrimeshShape();
+		CollisionMeshDirty = true;
+	}
+
+	[ExportToolButton("Rebuild Mesh")] public Callable RebuildMeshAction => Callable.From(RebuildMesh);
+	
+	public void RebuildMesh()
+	{
+		BuildMesh();
+		_meshDirty = false;
+			
+		CollisionMesh = Mesh.CreateTrimeshShape();
+		CollisionMeshDirty = true;
 	}
 	
 	private Array _array;
@@ -59,6 +107,7 @@ public partial class MeshBuilder : MeshInstance3D
 	{
 		base._Notification(what);
 
+#if TOOLS
 		if (what == NotificationEditorPreSave && Mesh is ArrayMesh preSaveArrMesh && preSaveArrMesh.GetSurfaceCount() > 0)
 		{
 			_array = preSaveArrMesh.SurfaceGetArrays(0);
@@ -70,6 +119,7 @@ public partial class MeshBuilder : MeshInstance3D
 
 			_array = null;
 		}
+#endif
 	}
 
 	public void BuildMesh()
@@ -82,18 +132,51 @@ public partial class MeshBuilder : MeshInstance3D
 		List<Vector3> normals = [];
 		List<int> indices = [];
 		
-		//mesh building code (rn, just invoke the mesh info function)
-		if(!_isSphere)
+		if(!_doCubeMarching)
 		{
-			FillRectangleMeshInfo(verts, uvs, normals, indices);
+			//mesh building code (rn, just invoke the mesh info function)
+			if (!_isSphere)
+			{
+				FillRectangleMeshInfo(verts, uvs, normals, indices);
+			}
+			else
+			{
+				FillSphericalMeshInfo(verts, uvs, normals, indices);
+			}
 		}
 		else
 		{
-			FillSphericalMeshInfo(verts, uvs, normals, indices);
+			// //for right now, in our starting marching cubes tests, chunk coord is 0, 0, 0
+			// MarchingCubes cubes = new MarchingCubes();
+			// cubes.ChunkOrigin = new Vector3(0, 0, 0); //* numPointsPerAxis - 1
+			// cubes.GroundLevel = 0.639f;
+			// GenerateChunk(cubes, verts, normals, indices);
+			//
+			// cubes = new MarchingCubes();
+			// cubes.ChunkOrigin = new Vector3(8, 0, 0);
+			// cubes.GroundLevel = 0.639f;
+			// GenerateChunk(cubes, verts, normals, indices);
+
+			for (int x = 0; x < _chunks.X; x++)
+			{
+				for (int y = 0; y < _chunks.Y; y++)
+				{
+					for (int z = 0; z < _chunks.Z; z++)
+					{
+						Vector3 origin = new Vector3(x, y, z) * 8.0f;
+
+						MarchingCubes chunkProcessor = new MarchingCubes(origin, _groundLevel);
+						
+						GenerateChunk(chunkProcessor, verts, normals, indices);
+					}
+				}
+			}
+			
 		}
 		
+		
 		surface[(int)Mesh.ArrayType.Vertex] = verts.ToArray();
-		surface[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
+		// surface[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
 		surface[(int)Mesh.ArrayType.Normal] = normals.ToArray();
 		surface[(int)Mesh.ArrayType.Index] = indices.ToArray();
 		
@@ -108,11 +191,58 @@ public partial class MeshBuilder : MeshInstance3D
 			// No blendshapes, lods, or compression used.
 			arrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surface);
 			
-			arrMesh.SurfaceSetMaterial(0, _thatch);
+			// arrMesh.SurfaceSetMaterial(0, _thatch);
 			
 			// To save mesh
 			// ResourceSaver.Save(Mesh, "res://test.tres", ResourceSaver.SaverFlags.Compress);
 
+		}
+	}
+
+	public void GenerateChunk(MarchingCubes cubes, List<Vector3> verts, List<Vector3> normals, List<int> indices)
+	{
+		for (int cx = 0; cx < 8; cx++)
+		{
+			for (int cy = 0; cy < 8; cy++)
+			{
+				for (int cz = 0; cz < 8; cz++)
+				{
+					cubes.ProcessCube(new Vector3I(cx, cy, cz));
+					
+				}
+			}
+		}
+
+		Godot.Collections.Dictionary<Vector2I, int> vertexIndexMap = new();
+		// List<Vector3> processedVertices = new();
+		// List<Vector3> processedNormals = new();
+		// List<int> processedTriangles = new();
+		
+		int triangleIndex = verts.Count;
+
+		for (int i = 0; i < cubes.Triangles.Count * 3; i++)
+		{
+			MarchingCubes.Vertex v = cubes.Vertices[i];
+
+			int sharedVertexIndex;
+			
+			if (!UseFlatShading && vertexIndexMap.TryGetValue(v.Id, out sharedVertexIndex))
+			{
+				indices.Add(sharedVertexIndex);
+			}
+			else
+			{
+				if (!UseFlatShading)
+				{
+					vertexIndexMap.Add(v.Id, triangleIndex);
+				}
+				verts.Add(v.Position);
+				normals.Add(v.Normal);
+				indices.Add(triangleIndex);
+				triangleIndex++;
+			}
+			
+			
 		}
 	}
 

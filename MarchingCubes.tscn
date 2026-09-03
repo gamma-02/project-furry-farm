@@ -2,18 +2,28 @@
 
 [ext_resource type="Script" uid="uid://bp6n6y3cgam7e" path="res://MeshBuilder.cs" id="1_m6v2k"]
 [ext_resource type="Script" uid="uid://4xq16cepmebe" path="res://generated_collision.gd" id="2_4xxe7"]
+[ext_resource type="Script" uid="uid://ccy11opovn2tx" path="res://generate_sprite_field.gd" id="3_0fwgf"]
+[ext_resource type="Script" uid="uid://k8afh4etcrg4" path="res://math_test.gd" id="4_vftvr"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_4xxe7"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xhu6v"]
-height = 2.0429688
+[sub_resource type="Gradient" id="Gradient_58q7n"]
+offsets = PackedFloat32Array(0.9937107, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_stsu2"]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6cd85"]
+gradient = SubResource("Gradient_58q7n")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.4869565, 0.49565217)
+fill_to = Vector2(0.7892377, 0.17040358)
 
 [node name="MarchingCubes" type="Node3D" unique_id=1522620498]
 
 [node name="AreaLight3D" type="AreaLight3D" parent="." unique_id=208466409]
 transform = Transform3D(1, 0, 0, 0, 0.9054651, 0.42442068, 0, -0.42442068, 0.9054651, 0, 0.9571147, 1.704419)
+visible = false
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2143700644]
 transform = Transform3D(1, 0, 0, 0, 0.94736874, 0.32014441, 0, -0.32014441, 0.94736874, 0, 1.0629731, 2.4426932)
@@ -22,6 +32,8 @@ transform = Transform3D(1, 0, 0, 0, 0.94736874, 0.32014441, 0, -0.32014441, 0.94
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019626498, 0.008572578, 0.005137205)
 mesh = SubResource("ArrayMesh_4xxe7")
 script = ExtResource("1_m6v2k")
+IsSphere = false
+Chunks = Vector3i(4, 1, 4)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=2129456917]
 
@@ -29,12 +41,18 @@ script = ExtResource("1_m6v2k")
 debug_fill = false
 script = ExtResource("2_4xxe7")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=85347836]
-transform = Transform3D(1, 0, 0, 0, 0.84623057, -0.5328169, 0, 0.5328169, 0.84623057, 0, 2.4553032, 0)
+[node name="sprite_field_origin" type="Node3D" parent="." unique_id=709828919]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, 5)
+visible = false
+script = ExtResource("3_0fwgf")
+placedSprites = true
+sprite_field_side_sprite_count = Vector3i(21, 21, 21)
+ground_level = 0.639
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1867656930]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.021484375, 0)
-shape = SubResource("CapsuleShape3D_xhu6v")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=562702548]
-mesh = SubResource("CapsuleMesh_stsu2")
+[node name="origin_sprite" type="Sprite3D" parent="sprite_field_origin" unique_id=1971462525]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
+visible = false
+modulate = Color(0.60028964, 0.60028964, 0.60028964, 1)
+billboard = 1
+texture = SubResource("GradientTexture2D_6cd85")
+script = ExtResource("4_vftvr")
