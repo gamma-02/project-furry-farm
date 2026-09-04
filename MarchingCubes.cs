@@ -18,16 +18,19 @@ public class MarchingCubes
     public Vector3 NoiseOffset;
     public Vector3 NoiseScale;
     public float GroundLevel; // also known as iso level
+    // public NoiseTexture3D NoiseTexture; //todo: actually implement this. Will have to pass the data back in something more meaningful
+    public Noise Noise;
 
     public List<Triangle> Triangles = new List<Triangle>(); //for now - will change later
     public List<Vertex> Vertices = new List<Vertex>();
 
-    public MarchingCubes(Vector3 chunkOrigin, Vector3 noiseOffset, Vector3 noiseScale, float groundLevel, int numPointsPerAxis = 20)
+    public MarchingCubes(Vector3 chunkOrigin, Vector3 noiseOffset, Vector3 noiseScale, float groundLevel, Noise noise = null, int numPointsPerAxis = 20)
     {
         ChunkOrigin = chunkOrigin;
         NoiseOffset = noiseOffset;
         NoiseScale = noiseScale;
         GroundLevel = groundLevel;
+        Noise = noise;
         NumPointsPerAxis = numPointsPerAxis;
     }
 
@@ -52,7 +55,17 @@ public class MarchingCubes
     float SampleDensity(Vector3I pos)
     {
         Vector3 transformedPos = (pos + NoiseOffset) * NoiseScale;
-        return Mathf.Cos(3 * transformedPos.X) - 2 * Mathf.Sin(transformedPos.Y) + Mathf.Cos(Mathf.Sin(transformedPos.Y) * transformedPos.Z);
+        if(Noise == null)
+        {
+            
+            return Mathf.Cos(3 * transformedPos.X) - 2 * Mathf.Sin(transformedPos.Y) +
+                   Mathf.Cos(Mathf.Sin(transformedPos.Y) * transformedPos.Z);
+        }
+        else
+        {
+            //todo: make sure the noise is transformed so that it's scale is correct w/ NoiseOffset and NoiseScale
+            return Noise.GetNoise3Dv(transformedPos); 
+        }
     }
 
     Vector3 CalculateNormal(Vector3I coord)

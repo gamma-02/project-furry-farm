@@ -3,6 +3,12 @@ extends Sprite3D
 
 @export_range(0.0, 1.0)
 var ground_level: float = 0.5
+
+@export
+var use_noise: bool = true
+@export
+var noise: Noise
+
 #minimum value of the vector field, in this case -2.8
 var minimum_value: float = -2.82843
 var maximum_value: float = 2.82843
@@ -12,8 +18,11 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 func math_function(pos: Vector3) -> float:
+	if use_noise and noise != null:
+		return noise.get_noise_3d(pos.x, pos.y, pos.z);
 	
 	return cos(pos.x) - 2 * sin(pos.y) + cos(pos.z);
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

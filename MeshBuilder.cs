@@ -36,6 +36,18 @@ public partial class MeshBuilder : MeshInstance3D
 		}
 	}
 
+	private bool _useNoise = true;
+	[Export]
+	public bool UseNoise
+	{
+		get => _useNoise;
+		set
+		{
+			_meshDirty = true;
+			_useNoise = value;
+		}
+	}
+
 	private Vector3I _chunks = new (1, 1, 1);
 	[Export]
 	public Vector3I Chunks
@@ -49,7 +61,7 @@ public partial class MeshBuilder : MeshInstance3D
 	}
 
 	private float _groundLevel = 0.639f;
-	[Export]
+	[Export(PropertyHint.Range, "0,1,-")]
 	public float GroundLevel
 	{
 		get => _groundLevel;
@@ -83,7 +95,19 @@ public partial class MeshBuilder : MeshInstance3D
 			_noiseOffset = value;
 		}
 	}
-	
+
+	private Noise _noise;
+	[Export]
+	public Noise Noise
+	{
+		get => _noise;
+		set
+		{
+			_meshDirty = true;
+			_noise = value;
+		}
+	}
+
 	private bool _meshDirty = true;
 	
 	private BaseMaterial3D _thatch = ResourceLoader.Load<BaseMaterial3D>("res://Assets/Materials/ThatchRoof/testMaterial.tres");
@@ -122,7 +146,7 @@ public partial class MeshBuilder : MeshInstance3D
 	{
 		BuildMesh();
 		_meshDirty = false;
-			
+		
 		CollisionMesh = Mesh.CreateTrimeshShape();
 		CollisionMeshDirty = true;
 	}
@@ -140,7 +164,9 @@ public partial class MeshBuilder : MeshInstance3D
 		} else if (what == NotificationEditorPostSave && Mesh is ArrayMesh postSaveArrMesh)
 		{
 			postSaveArrMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, _array);
-			postSaveArrMesh.SurfaceSetMaterial(0, _thatch);
+			// postSaveArrMesh.SurfaceSetMaterial(0, _thatch);
+			
+			// postSaveArrMesh._Notification((int)NotificationLocalTransformChanged);
 
 			_array = null;
 		}
@@ -189,8 +215,9 @@ public partial class MeshBuilder : MeshInstance3D
 					for (int z = 0; z < _chunks.Z; z++)
 					{
 						Vector3 origin = new Vector3(x, y, z) * 16.0f;
-
-						MarchingCubes chunkProcessor = new MarchingCubes(origin, _noiseOffset, _noiseScale, _groundLevel);
+						MarchingCubes chunkProcessor = !_useNoise 
+							? new MarchingCubes(origin, _noiseOffset, _noiseScale, _groundLevel) 
+							: new MarchingCubes(origin, _noiseOffset, _noiseScale, _groundLevel, _noise);
 						
 						GenerateChunk(chunkProcessor, verts, normals, indices);
 					}
@@ -249,9 +276,7 @@ public partial class MeshBuilder : MeshInstance3D
 		{
 			MarchingCubes.Vertex v = cubes.Vertices[i];
 
-			int sharedVertexIndex;
-			
-			if (!UseFlatShading && vertexIndexMap.TryGetValue(v.Id, out sharedVertexIndex))
+			if (!UseFlatShading && vertexIndexMap.TryGetValue(v.Id, out int sharedVertexIndex))
 			{
 				indices.Add(sharedVertexIndex);
 			}
