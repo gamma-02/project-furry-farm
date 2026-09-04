@@ -29,11 +29,11 @@ visible = false
 transform = Transform3D(1, 0, 0, 0, 0.94736874, 0.32014441, 0, -0.32014441, 0.94736874, 0, 1.0629731, 2.4426932)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1591651628]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019626498, 0.008572578, 0.005137205)
 mesh = SubResource("ArrayMesh_4xxe7")
 script = ExtResource("1_m6v2k")
 IsSphere = false
 Chunks = Vector3i(4, 1, 4)
+NoiseScale = Vector3(0.5, 0.5, 0.5)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=2129456917]
 
@@ -52,7 +52,7 @@ ground_level = 0.639
 [node name="origin_sprite" type="Sprite3D" parent="sprite_field_origin" unique_id=1971462525]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
 visible = false
-modulate = Color(0.60028964, 0.60028964, 0.60028964, 1)
+modulate = Color(0.944361, 0.944361, 0.944361, 1)
 billboard = 1
 texture = SubResource("GradientTexture2D_6cd85")
 script = ExtResource("4_vftvr")

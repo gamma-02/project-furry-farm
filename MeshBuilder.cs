@@ -10,6 +10,8 @@ namespace ProjectFurryFarm;
 [Tool, GlobalClass] //this should also run in the editor! we want to see our mesh, lol
 public partial class MeshBuilder : MeshInstance3D
 {
+	[ExportToolButton("Rebuild Mesh")] public Callable RebuildMeshAction => Callable.From(RebuildMesh);
+	
 	private bool _isSphere = true;
 	[Export]
 	public bool IsSphere
@@ -58,6 +60,30 @@ public partial class MeshBuilder : MeshInstance3D
 		}
 	}
 
+	private Vector3 _noiseScale = new (1.0f, 1.0f, 1.0f);
+	[Export]
+	public Vector3 NoiseScale
+	{
+		get => _noiseScale;
+		set
+		{
+			_meshDirty = true;
+			_noiseScale = value;
+		}
+	}
+
+	private Vector3 _noiseOffset;
+	[Export]
+	public Vector3 NoiseOffset
+	{
+		get => _noiseOffset;
+		set
+		{
+			_meshDirty = true;
+			_noiseOffset = value;
+		}
+	}
+	
 	private bool _meshDirty = true;
 	
 	private BaseMaterial3D _thatch = ResourceLoader.Load<BaseMaterial3D>("res://Assets/Materials/ThatchRoof/testMaterial.tres");
@@ -91,7 +117,6 @@ public partial class MeshBuilder : MeshInstance3D
 		CollisionMeshDirty = true;
 	}
 
-	[ExportToolButton("Rebuild Mesh")] public Callable RebuildMeshAction => Callable.From(RebuildMesh);
 	
 	public void RebuildMesh()
 	{
@@ -163,9 +188,9 @@ public partial class MeshBuilder : MeshInstance3D
 				{
 					for (int z = 0; z < _chunks.Z; z++)
 					{
-						Vector3 origin = new Vector3(x, y, z) * 8.0f;
+						Vector3 origin = new Vector3(x, y, z) * 16.0f;
 
-						MarchingCubes chunkProcessor = new MarchingCubes(origin, _groundLevel);
+						MarchingCubes chunkProcessor = new MarchingCubes(origin, _noiseOffset, _noiseScale, _groundLevel);
 						
 						GenerateChunk(chunkProcessor, verts, normals, indices);
 					}
@@ -201,11 +226,11 @@ public partial class MeshBuilder : MeshInstance3D
 
 	public void GenerateChunk(MarchingCubes cubes, List<Vector3> verts, List<Vector3> normals, List<int> indices)
 	{
-		for (int cx = 0; cx < 8; cx++)
+		for (int cx = 0; cx < 16; cx++)
 		{
-			for (int cy = 0; cy < 8; cy++)
+			for (int cy = 0; cy < 16; cy++)
 			{
-				for (int cz = 0; cz < 8; cz++)
+				for (int cz = 0; cz < 16; cz++)
 				{
 					cubes.ProcessCube(new Vector3I(cx, cy, cz));
 					

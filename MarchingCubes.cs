@@ -15,14 +15,18 @@ public class MarchingCubes
     public int NumPointsPerAxis; //for now
 
     public Vector3 ChunkOrigin;
+    public Vector3 NoiseOffset;
+    public Vector3 NoiseScale;
     public float GroundLevel; // also known as iso level
 
     public List<Triangle> Triangles = new List<Triangle>(); //for now - will change later
     public List<Vertex> Vertices = new List<Vertex>();
 
-    public MarchingCubes(Vector3 chunkOrigin, float groundLevel, int numPointsPerAxis = 10)
+    public MarchingCubes(Vector3 chunkOrigin, Vector3 noiseOffset, Vector3 noiseScale, float groundLevel, int numPointsPerAxis = 20)
     {
         ChunkOrigin = chunkOrigin;
+        NoiseOffset = noiseOffset;
+        NoiseScale = noiseScale;
         GroundLevel = groundLevel;
         NumPointsPerAxis = numPointsPerAxis;
     }
@@ -31,7 +35,7 @@ public class MarchingCubes
     //I don't know why this is here. We do not have a planet size. We do not have a texture size. What.
     Vector3 CoordToWorld(Vector3I coord)
     {
-        return new Vector3(coord.X, coord.Y, coord.Z) /*- new Vector3(0.5f, 0.5f, 0.5f)*/; // is this transform needed?
+        return new Vector3(coord.X, coord.Y, coord.Z) * 0.5f/*- new Vector3(0.5f, 0.5f, 0.5f)*/; // is this transform needed?
     }
 
     int IndexFromCoord(Vector3I coord)
@@ -47,7 +51,8 @@ public class MarchingCubes
     //nvm we're good. ti could be a 3d texture, lol
     float SampleDensity(Vector3I pos)
     {
-        return Mathf.Cos(3 * pos.X) - 2 * Mathf.Sin(pos.Y) + Mathf.Cos(Mathf.Sin(pos.Y) * pos.Z);
+        Vector3 transformedPos = (pos + NoiseOffset) * NoiseScale;
+        return Mathf.Cos(3 * transformedPos.X) - 2 * Mathf.Sin(transformedPos.Y) + Mathf.Cos(Mathf.Sin(transformedPos.Y) * transformedPos.Z);
     }
 
     Vector3 CalculateNormal(Vector3I coord)
@@ -55,11 +60,11 @@ public class MarchingCubes
         Vector3I offsetX = new(1, 0, 0);
         Vector3I offsetY = new(0, 1, 0);
         Vector3I offsetZ = new(0, 0, 1);
-
+        
         float dx = SampleDensity(coord + offsetX) - SampleDensity(coord - offsetX);
         float dy = SampleDensity(coord + offsetY) - SampleDensity(coord - offsetY);
         float dz = SampleDensity(coord + offsetZ) - SampleDensity(coord - offsetZ);
-
+        
         return -(new Vector3(dx, dy, dz).Normalized());
     }
 
